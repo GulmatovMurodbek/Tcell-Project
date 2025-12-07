@@ -55,7 +55,7 @@ const HeroSection = () => {
                 <div className="text-sm text-muted-foreground">Покрытие сети</div>
               </div>
               <div>
-                <div className="text-3xl font-bold gradient-text">4G/LTE</div>
+                <div className="text-3xl font-bold gradient-text">5G/LTE</div>
                 <div className="text-sm text-muted-foreground">Максимальная скорость</div>
               </div>
             </div>
