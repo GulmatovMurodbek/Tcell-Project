@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { TariffCard } from "@/components/tariff-card"
-import { BestTariffResult } from "@/components/best-tariff-results"
-import { calculatePrice } from "@/lib/tariff-calculator"
-import type { Tariff } from "@/lib/tariff-calculator"
-import { Phone, Smartphone, MessageSquare, Search } from "lucide-react"
-
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { TariffCard } from "@/components/tariff-card";
+import { BestTariffResult } from "@/components/best-tariff-results";
+import { calculatePrice } from "@/lib/tariff-calculator";
+import type { Tariff } from "@/lib/tariff-calculator";
+import { Phone, Smartphone, MessageSquare, Search } from "lucide-react";
+import axios from "axios";
 const TARIFFS: Tariff[] = [
   {
     id: 1,
@@ -78,60 +84,77 @@ const TARIFFS: Tariff[] = [
     active: true,
     created_at: new Date().toISOString(),
   },
-]
+];
 
 export default function TariffCalculator() {
-  const [minutes, setMinutes] = useState<string>("")
-  const [gb, setGb] = useState<string>("")
-  const [sms, setSms] = useState<string>("")
-  const [bestTariff, setBestTariff] = useState<any>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [minPrice, setMinPrice] = useState<string>("")
-  const [maxPrice, setMaxPrice] = useState<string>("")
+  const [minutes, setMinutes] = useState<string>("");
+  const [gb, setGb] = useState<string>("");
+  const [sms, setSms] = useState<string>("");
+  const [bestTariff, setBestTariff] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
 
-  const activeTariffs = TARIFFS.filter((t) => t.active)
+  const activeTariffs = TARIFFS.filter((t) => t.active);
 
   const filteredTariffs = activeTariffs.filter((tariff) => {
-    const matchesSearch = tariff.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const price = Number.parseFloat(tariff.price)
-    const matchesMinPrice = !minPrice || price >= Number.parseFloat(minPrice)
-    const matchesMaxPrice = !maxPrice || price <= Number.parseFloat(maxPrice)
-    return matchesSearch && matchesMinPrice && matchesMaxPrice
-  })
+    const matchesSearch = tariff.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const price = Number.parseFloat(tariff.price);
+    const matchesMinPrice = !minPrice || price >= Number.parseFloat(minPrice);
+    const matchesMaxPrice = !maxPrice || price <= Number.parseFloat(maxPrice);
+    return matchesSearch && matchesMinPrice && matchesMaxPrice;
+  });
 
   const handleCalculate = () => {
     const usage = {
       minutes: Number.parseInt(minutes) || 0,
       gb: Number.parseFloat(gb) || 0,
       sms: Number.parseInt(sms) || 0,
-    }
+    };
 
-    let best = null
-    let lowestPrice = Number.POSITIVE_INFINITY
+    let best = null;
+    let lowestPrice = Number.POSITIVE_INFINITY;
 
     activeTariffs.forEach((tariff) => {
-      const result = calculatePrice(tariff, usage)
+      const result = calculatePrice(tariff, usage);
       if (result.total < lowestPrice) {
-        lowestPrice = result.total
+        lowestPrice = result.total;
         best = {
           tariff,
           estimatedPrice: result.total,
           breakdown: result.breakdown,
-        }
+        };
       }
-    })
+    });
 
-    setBestTariff(best)
+    setBestTariff(best);
+  };
+  async function getTarifs() {
+    try {
+      let { data } = await axios.get("http://157.180.29.248:9005/tariff/list/");
+      console.log(data.data);
+    } catch (error) {
+      console.error(error);
+    }
   }
-
+  useEffect(() => {
+    getTarifs()
+  },[]);
   return (
     <div className="min-h-screen mt-[80px] bg-gradient-to-br from-purple-600  to-purple-700">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16 text-center">
-        <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30 border-white/30">Калькулятор тарифов Tcell</Badge>
-        <h1 className="text-5xl font-bold text-white mb-4 text-balance">Найдите идеальный тариф Tcell для себя</h1>
+        <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30 border-white/30">
+          Калькулятор тарифов Tcell
+        </Badge>
+        <h1 className="text-5xl font-bold text-white mb-4 text-balance">
+          Найдите идеальный тариф Tcell для себя
+        </h1>
         <p className="text-xl text-white/90 mb-8 text-balance max-w-2xl mx-auto">
-        Введите ваше ежемесячное использование и узнайте, какой тариф предлагает наилучшее соотношение цены и качества для ваших нужд
+          Введите ваше ежемесячное использование и узнайте, какой тариф
+          предлагает наилучшее соотношение цены и качества для ваших нужд
         </p>
       </div>
 
@@ -140,8 +163,12 @@ export default function TariffCalculator() {
         {/* Usage Input Card */}
         <Card className="max-w-2xl mx-auto mb-12 shadow-2xl border-0">
           <CardHeader>
-            <CardTitle className="text-2xl">Рассчитайте свой лучший тариф</CardTitle>
-            <CardDescription>Введите свои типичные ежемесячные показатели ниже</CardDescription>
+            <CardTitle className="text-2xl">
+              Рассчитайте свой лучший тариф
+            </CardTitle>
+            <CardDescription>
+              Введите свои типичные ежемесячные показатели ниже
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
@@ -208,8 +235,12 @@ export default function TariffCalculator() {
         {/* Filters */}
         <Card className="max-w-6xl mx-auto mb-8 shadow-xl border-0">
           <CardHeader>
-            <CardTitle className="text-xl">Просмотреть все активные тарифы</CardTitle>
-            <CardDescription>Отфильтруйте и сравните доступные тарифы</CardDescription>
+            <CardTitle className="text-xl">
+              Просмотреть все активные тарифы
+            </CardTitle>
+            <CardDescription>
+              Отфильтруйте и сравните доступные тарифы
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-4">
@@ -252,13 +283,13 @@ export default function TariffCalculator() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSearchTerm("")
-                    setMinPrice("")
-                    setMaxPrice("")
+                    setSearchTerm("");
+                    setMinPrice("");
+                    setMaxPrice("");
                   }}
                   className="w-full"
                 >
-                 Сбросить фильтры
+                  Сбросить фильтры
                 </Button>
               </div>
             </div>
@@ -276,7 +307,8 @@ export default function TariffCalculator() {
             <Card className="text-center py-12 shadow-xl border-0">
               <CardContent>
                 <p className="text-muted-foreground">
-                  No tariffs match your filters. Try adjusting your search criteria.
+                  No tariffs match your filters. Try adjusting your search
+                  criteria.
                 </p>
               </CardContent>
             </Card>
@@ -284,5 +316,5 @@ export default function TariffCalculator() {
         </div>
       </div>
     </div>
-  )
+  );
 }

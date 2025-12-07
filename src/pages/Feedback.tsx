@@ -325,8 +325,6 @@ const Feedback = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };
