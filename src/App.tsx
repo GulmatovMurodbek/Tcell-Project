@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Feedback from "./pages/Feedback";
 import Expenses from "./pages/Expenses";
 import TariffCalculator from "./pages/createTarif";
+import DashboardPage from "./pages/dashboard";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/feedback" element={<Feedback/>} />
           <Route path="/expenses" element={<Expenses/>} />
           <Route path="/tarifFind" element={<TariffCalculator/>}/>
+          <Route path="/dashboard" element={<DashboardPage/>}/>
           <Route path="*" element={<NotFound />} />
           </Route>
           
