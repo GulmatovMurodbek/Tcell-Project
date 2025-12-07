@@ -6,70 +6,17 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { 
   TrendingUp, 
-  TrendingDown, 
-  Wifi, 
-  Phone, 
-  MessageSquare, 
-  Settings, 
-  CreditCard,
-  Bell,
-  Calendar,
-  Filter,
-  ArrowUpRight,
-  ArrowDownRight
+  Bell
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-} from "recharts";
+import AiUsageModal from "@/components/aiDialog";
 
-const chartData = [
-  { day: "Пн", amount: 12 },
-  { day: "Вт", amount: 8 },
-  { day: "Ср", amount: 15 },
-  { day: "Чт", amount: 6 },
-  { day: "Пт", amount: 22 },
-  { day: "Сб", amount: 18 },
-  { day: "Вс", amount: 10 },
-];
-
-const categories = [
-  { name: "Интернет", icon: Wifi, amount: 45, percent: 35, color: "from-blue-500 to-cyan-400" },
-  { name: "Звонки", icon: Phone, amount: 32, percent: 25, color: "from-green-500 to-emerald-400" },
-  { name: "SMS", icon: MessageSquare, amount: 8, percent: 6, color: "from-orange-500 to-amber-400" },
-  { name: "Услуги", icon: Settings, amount: 25, percent: 19, color: "from-purple-500 to-pink-400" },
-  { name: "Подписки", icon: CreditCard, amount: 19, percent: 15, color: "from-red-500 to-rose-400" },
-];
-
-const expenseHistory = [
-  { date: "06.12.2024", type: "Интернет", description: "1 ГБ трафика", amount: -5, balance: 124 },
-  { date: "06.12.2024", type: "Звонки", description: "10 мин на другие сети", amount: -3, balance: 129 },
-  { date: "05.12.2024", type: "SMS", description: "5 сообщений", amount: -2, balance: 132 },
-  { date: "05.12.2024", type: "Подписка", description: "Музыка Premium", amount: -15, balance: 134 },
-  { date: "04.12.2024", type: "Интернет", description: "500 МБ трафика", amount: -2.5, balance: 149 },
-  { date: "04.12.2024", type: "Услуги", description: "Определитель номера", amount: -1, balance: 151.5 },
-  { date: "03.12.2024", type: "Звонки", description: "30 мин внутри сети", amount: 0, balance: 152.5 },
-  { date: "03.12.2024", type: "Пополнение", description: "Баланс пополнен", amount: 50, balance: 152.5 },
-];
-
-type FilterPeriod = "day" | "week" | "month";
-type FilterCategory = "all" | "internet" | "calls" | "sms" | "services" | "subscriptions";
 
 const Expenses = () => {
-  const [period, setPeriod] = useState<FilterPeriod>("week");
-  const [category, setCategory] = useState<FilterCategory>("all");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  let [isOpen,setIsOpen]=useState(false)
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       
       {/* Hero Section */}
       <section className="pt-24 pb-12 relative overflow-hidden">
@@ -94,106 +41,10 @@ const Expenses = () => {
       </section>
 
       {/* Statistics Cards */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="p-6 bg-card border-border/50 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-muted-foreground">Расходы за месяц</span>
-                <div className="p-2 rounded-xl bg-primary/10">
-                  <Calendar className="w-5 h-5 text-primary" />
-                </div>
-              </div>
-              <div className="flex items-end gap-2">
-                <span className="text-3xl font-bold text-foreground">129</span>
-                <span className="text-lg text-muted-foreground mb-1">сомони</span>
-              </div>
-              <div className="flex items-center gap-1 mt-2 text-sm">
-                <ArrowDownRight className="w-4 h-4 text-green-500" />
-                <span className="text-green-500">12%</span>
-                <span className="text-muted-foreground">меньше прошлого</span>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-card border-border/50 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-muted-foreground">Сегодняшние траты</span>
-                <div className="p-2 rounded-xl bg-tcell-pink/10">
-                  <TrendingDown className="w-5 h-5 text-tcell-pink" />
-                </div>
-              </div>
-              <div className="flex items-end gap-2">
-                <span className="text-3xl font-bold text-foreground">8</span>
-                <span className="text-lg text-muted-foreground mb-1">сомони</span>
-              </div>
-              <div className="flex items-center gap-1 mt-2 text-sm">
-                <ArrowUpRight className="w-4 h-4 text-orange-500" />
-                <span className="text-orange-500">5%</span>
-                <span className="text-muted-foreground">больше вчера</span>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-card border-border/50 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-muted-foreground">Средний расход</span>
-                <div className="p-2 rounded-xl bg-green-500/10">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                </div>
-              </div>
-              <div className="flex items-end gap-2">
-                <span className="text-3xl font-bold text-foreground">4.3</span>
-                <span className="text-lg text-muted-foreground mb-1">сомони/день</span>
-              </div>
-              <div className="flex items-center gap-1 mt-2 text-sm">
-                <span className="text-muted-foreground">Стабильный расход</span>
-              </div>
-            </Card>
-          </div>
-
-          {/* Chart */}
-          <Card className="p-6 bg-card border-border/50 shadow-lg mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-foreground">График расходов</h3>
-              <div className="flex gap-2">
-                {(["day", "week", "month"] as FilterPeriod[]).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                      period === p
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    {p === "day" ? "День" : p === "week" ? "Неделя" : "Месяц"}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "12px"
-                    }}
-                    formatter={(value) => [`${value} сомони`, "Расход"]}
-                  />
-                  <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-        </div>
-      </section>
+      
 
       {/* Categories */}
-      <section className="py-8">
+      {/* <section className="py-8">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-foreground mb-6">Категории расходов</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -218,10 +69,10 @@ const Expenses = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Expense History */}
-      <section className="py-8">
+      {/* <section className="py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h2 className="text-2xl font-bold text-foreground">История расходов</h2>
@@ -289,9 +140,34 @@ const Expenses = () => {
             </div>
           </Card>
         </div>
-      </section>
+      </section> */}
 
       {/* Notifications */}
+      <AiUsageModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      {/* CTA Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 gradient-primary opacity-90" />
+            <div className="absolute inset-0">
+              <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+              <div className="absolute bottom-10 right-10 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+            </div>
+            
+            <div className="relative z-10 p-8 md:p-12 text-center">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Контролируйте свои расходы и экономьте больше
+              </h2>
+              <p className="text-white/80 mb-8 max-w-xl mx-auto">
+                Подключите тарифи и получайте рекомендации по экономии
+              </p>
+              <Button onClick={()=>setIsOpen(true)} size="lg" className="bg-white text-primary hover:bg-white/90 shadow-xl">
+                Настроить расходов
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="py-8">
         <div className="container mx-auto px-4">
           <Card className="p-6 bg-gradient-to-r from-primary/5 to-tcell-pink/5 border-border/50 shadow-lg">
@@ -316,32 +192,6 @@ const Expenses = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="relative rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 gradient-primary opacity-90" />
-            <div className="absolute inset-0">
-              <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-              <div className="absolute bottom-10 right-10 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
-            </div>
-            
-            <div className="relative z-10 p-8 md:p-12 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                Контролируйте свои расходы и экономьте больше
-              </h2>
-              <p className="text-white/80 mb-8 max-w-xl mx-auto">
-                Подключите автоматические лимиты и получайте рекомендации по экономии
-              </p>
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 shadow-xl">
-                Настроить лимиты
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <Footer />
     </div>
   );
 };

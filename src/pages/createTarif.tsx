@@ -18,73 +18,6 @@ import { calculatePrice } from "@/lib/tariff-calculator";
 import type { Tariff } from "@/lib/tariff-calculator";
 import { Phone, Smartphone, MessageSquare, Search } from "lucide-react";
 import axios from "axios";
-const TARIFFS: Tariff[] = [
-  {
-    id: 1,
-    name: "Salom",
-    price: "90.00",
-    included_minutes: 1000,
-    included_gb: "35",
-    included_sms: 500,
-    extra_minute_price: "0.50",
-    extra_gb_price: "10.00",
-    extra_sms_price: "0.10",
-    active: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    name: "Asosiy",
-    price: "50.00",
-    included_minutes: 500,
-    included_gb: "20",
-    included_sms: 200,
-    extra_minute_price: "0.60",
-    extra_gb_price: "12.00",
-    extra_sms_price: "0.15",
-    active: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    name: "Start",
-    price: "25.00",
-    included_minutes: 200,
-    included_gb: "10",
-    included_sms: 100,
-    extra_minute_price: "0.70",
-    extra_gb_price: "15.00",
-    extra_sms_price: "0.20",
-    active: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 4,
-    name: "Premium",
-    price: "150.00",
-    included_minutes: 2000,
-    included_gb: "50",
-    included_sms: 1000,
-    extra_minute_price: "0.40",
-    extra_gb_price: "8.00",
-    extra_sms_price: "0.05",
-    active: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 5,
-    name: "Business",
-    price: "200.00",
-    included_minutes: 3000,
-    included_gb: "100",
-    included_sms: 2000,
-    extra_minute_price: "0.30",
-    extra_gb_price: "5.00",
-    extra_sms_price: "0.03",
-    active: true,
-    created_at: new Date().toISOString(),
-  },
-];
 
 export default function TariffCalculator() {
   const [minutes, setMinutes] = useState<string>("");
@@ -94,8 +27,9 @@ export default function TariffCalculator() {
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
-
-  const activeTariffs = TARIFFS.filter((t) => t.active);
+  const [tarif, setTarif] = useState<Tariff[]>([]);
+ 
+  const activeTariffs = tarif?.length ? tarif.filter((t) => t.active) : [];
 
   const filteredTariffs = activeTariffs.filter((tariff) => {
     const matchesSearch = tariff.name
@@ -133,12 +67,15 @@ export default function TariffCalculator() {
   };
   async function getTarifs() {
     try {
-      let { data } = await axios.get("http://157.180.29.248:9005/tariff/list/");
-      console.log(data.data);
+      const response = await axios.get("http://157.180.29.248:9005/tariff/list/");
+      console.log("Tariffs API response:", response.data);
+      setTarif(response.data?.data || response.data || []);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching tariffs:", error);
+      setTarif([]); // default array барои пешгирӣ аз хатогӣ
     }
   }
+ 
   useEffect(() => {
     getTarifs()
   },[]);

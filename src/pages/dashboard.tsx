@@ -3,11 +3,22 @@ import { DashboardStats } from "@/components/dashboard-stats"
 import { CategoryChart } from "@/components/category-charts"
 import { WordFrequencyPie } from "@/components/word-frequency-charts"
 import { ComplaintsTable } from "@/components/comlaints-table"
+import axios from "axios"
+import AIAnalysisSection from "@/components/Ai-Analiz"
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-
+  let [aiAnaliz, setAiAnaliz] = useState<any | null>(null);
+  async function AnalizAi()
+  {
+    try {
+     let {data}= await axios.get("http://157.180.29.248:9005/feedback/ai-analyze/")
+     setAiAnaliz(data)
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
     async function fetchData() {
       try {
@@ -23,8 +34,8 @@ export default function DashboardPage() {
         setLoading(false)
       }
     }
-
     fetchData()
+    AnalizAi()
   }, [])
 
   if (loading) return <div>Loading...</div>
@@ -45,8 +56,8 @@ export default function DashboardPage() {
         <CategoryChart data={data} />
         <WordFrequencyPie data={data} />
       </div>
-
-      <ComplaintsTable data={data} />
+      
+      {aiAnaliz ? <AIAnalysisSection data={aiAnaliz}/> : <div>Loading AI Analysis...</div>}
     </div>
   )
 }

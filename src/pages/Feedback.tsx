@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface Review {
   id: number;
@@ -100,12 +101,34 @@ const Feedback = () => {
     consent: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  let [feedback, setFeedback] = useState("");
+  async function addNewFeedback() {
+    try {
+      await axios.post("http://157.180.29.248:9005/feedback/add/", {
+        text: feedback,
+      });
+      setFormData({
+        name: "",
+        phone: "",
+        rating: 0,
+        text: "",
+        consent: true,
+      });
+      setFeedback("")
+    } catch (error) {
+      console.error(error);
+    }
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone || !formData.rating || !formData.text) {
-      toast.error("Пожалуйста, заполните все поля");
+    if (
+      !formData.name ||
+      !formData.phone ||
+      !formData.rating ||
+      !formData.text
+    ) {
+      toast.success("Спасибо за отзыв");
       return;
     }
 
@@ -120,7 +143,8 @@ const Feedback = () => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     toast.success("Спасибо за ваш отзыв!", {
-      description: "Мы ценим ваше мнение и используем его для улучшения сервиса.",
+      description:
+        "Мы ценим ваше мнение и используем его для улучшения сервиса.",
     });
 
     setFormData({
@@ -134,7 +158,9 @@ const Feedback = () => {
   };
 
   const scrollToForm = () => {
-    document.getElementById("feedback-form")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("feedback-form")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -151,7 +177,9 @@ const Feedback = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6">
               <MessageSquare className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground">Обратная связь</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Обратная связь
+              </span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
@@ -161,7 +189,8 @@ const Feedback = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Поделитесь своим опытом использования услуг Tcell. Каждый отзыв помогает нам становиться лучше.
+              Поделитесь своим опытом использования услуг Tcell. Каждый отзыв
+              помогает нам становиться лучше.
             </p>
 
             <Button variant="hero" size="lg" onClick={scrollToForm}>
@@ -189,43 +218,57 @@ const Feedback = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Ваше имя</label>
+                    <label className="text-sm font-medium text-foreground">
+                      Ваше имя
+                    </label>
                     <Input
                       placeholder="Введите имя"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       className="h-12 rounded-xl bg-background/50 border-border/50 focus:border-primary"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Номер телефона</label>
+                    <label className="text-sm font-medium text-foreground">
+                      Номер телефона
+                    </label>
                     <Input
                       placeholder="+992 XX XXX XX XX"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                       className="h-12 rounded-xl bg-background/50 border-border/50 focus:border-primary"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Оценка обслуживания</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Оценка обслуживания
+                  </label>
                   <div className="p-4 rounded-xl bg-background/50 border border-border/50">
                     <StarRating
                       rating={formData.rating}
-                      onRatingChange={(rating) => setFormData({ ...formData, rating })}
+                      onRatingChange={(rating) =>
+                        setFormData({ ...formData, rating })
+                      }
                       interactive
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Ваш отзыв</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Ваш отзыв
+                  </label>
                   <textarea
                     placeholder="Расскажите о вашем опыте..."
-                    value={formData.text}
-                    onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
                     rows={5}
                     className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-all text-foreground placeholder:text-muted-foreground"
                   />
@@ -244,7 +287,8 @@ const Feedback = () => {
                     htmlFor="consent"
                     className="text-sm text-muted-foreground cursor-pointer leading-relaxed"
                   >
-                    Разрешаю использовать мой отзыв в целях улучшения сервиса и для публикации на сайте
+                    Разрешаю использовать мой отзыв в целях улучшения сервиса и
+                    для публикации на сайте
                   </label>
                 </div>
 
@@ -254,6 +298,7 @@ const Feedback = () => {
                   size="lg"
                   className="w-full"
                   disabled={isSubmitting}
+                  onClick={addNewFeedback}
                 >
                   {isSubmitting ? (
                     <>
@@ -310,7 +355,8 @@ const Feedback = () => {
             </h2>
 
             <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto">
-              Ваши отзывы помогают нам развиваться и предоставлять лучший сервис для вас
+              Ваши отзывы помогают нам развиваться и предоставлять лучший сервис
+              для вас
             </p>
 
             <Button
