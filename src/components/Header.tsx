@@ -88,7 +88,7 @@ const Header = () => {
               >
                 Отзывы и аналитика
               </Link>
-              <Button variant="hero" size="default" className="mt-2">
+              <Button onClick={()=>navigate("/tarifFind")} variant="hero" size="default" className="mt-2">
                 Найти лучший тариф
               </Button>
             </nav>
